@@ -12,14 +12,16 @@ then
   echo Welcome, $username! It looks like this is your first time here.
   INSERT_NEW_PLAYER=$($PSQL "insert into player(username) values('$username');")
 else
-  best_game=$($PSQL "select min(num_of_guesses) from games left join player using (player_id) where username = '$username';")
   games_played=$($PSQL "select count(game_id) from games left join player using (player_id) where username = '$username';")
+  best_game=$($PSQL "select min(num_of_guesses) from games left join player using (player_id) where username = '$username';")
 
   echo Welcome back, $username! You have played $games_played games, and your best game took $best_game guesses.
 fi
 
+# random number generator
 RANDOM_NUMBER=$(( RANDOM % 1000 + 1 ))
 
+# initialize variable to count number of guesses
 NUM_OF_GUESSES=0
 
 echo -e "\nGuess the secret number between 1 and 1000:"
@@ -51,6 +53,7 @@ do
   fi
 done
 
+#count the last guess that has exited the loop
 ((NUM_OF_GUESSES++))
 
 ID=$($PSQL "select player_id from player where username = '$username';")
